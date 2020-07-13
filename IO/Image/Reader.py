@@ -27,21 +27,31 @@ import sys
 #2) Only supported for image with '.tif'
 
 
-def read_ImagePatch(rootPath, x, y, z, dx, dy, dz):
+def read_ImagePatch(rootPath, coordinates, dissectionSize):
+    x,   y,  z = coordinates
+    dx, dy, dz = dissectionSize
     
     #Get Image Paths from the RootFolder
     imgPaths = get_ImagePaths(rootPath)
     
+    #Get Image Format
+    img = cv2.imread(imgPaths[0], -1)
+    dataType = type(img[0,0])
+    
     #Get 3D Image Dimensions
     [ny, nx, nz] = get_DimensionsFrom3DImageSequence(imgPaths)
-    
-    #Initialize an empty Odd 3D Matrix to be filled with the Image Patch    
-    imgPatch = get_zerosOddMatrix(dy, dx, dz)
 
     #Get Extreme Index to extract the Image Patch from the Whole Image
     x0, x1 = get_CenteredExtremes(x, dx)
     y0, y1 = get_CenteredExtremes(y, dy)
     z0, z1 = get_CenteredExtremes(z, dz)
+    
+#    #Get Dimensions
+#    print('diff')
+#    print(x1-x0 + 1)
+    
+    #Initialize an empty Odd 3D Matrix to be filled with the Image Patch    
+    imgPatch = get_zerosOddMatrix(dy, dx, dz, dataType)
 
     #Get 3D image Patch from the Big 3D Image Sequence
     vz = range(z0, z1+1)    
@@ -62,17 +72,19 @@ def get_DimensionsFrom3DImageSequence(imgPaths):
     nz = len(imgPaths)
     return ny, nx, nz
 
-def get_zerosOddMatrix(ny, nx, nz):
+def get_zerosOddMatrix(ny, nx, nz, dataType):
     nx = get_Odd(nx)
     ny = get_Odd(ny)
     nz = get_Odd(nz)
     
-    M = np.zeros((ny,nx,nz))
+    M = np.zeros((ny,nx,nz), dtype=dataType)
     return M
  
 def get_CenteredExtremes(r, dr):
     dr_half = dr//2    
     [r0, r1 ] = [r - dr_half, r + dr_half]
+    if r0<0:
+        r0 = 0
     return r0, r1
 
 def get_Odd(num):
@@ -81,13 +93,19 @@ def get_Odd(num):
     return num
         
 if __name__== '__main__':
-    
+  
+  
 #==============================================================================
 #   #Input
 #==============================================================================
-    rootPath = 'D:\\MyPythonPosDoc\\Brains\\620x905x1708_2tiff_8bit'     
+    rootPath = 'D:\\MyPythonPosDoc\\Brains\\620x905x1708_2tiff_8bit'
     x, y, z = 309, 327, 850
-    n = 100
+    
+    rootPath = 'D:\\MyPythonPosDoc\\Brains\\2482x3620x1708_2tiff_8bit' 
+    BrainRegion = 'mCA1'   
+    x, y, z = 1238, 1310, 850
+
+    n = 50
     dx, dy, dz = n, n, n  
 #    dx, dy, dz = 31, 20, n 
     
@@ -118,41 +136,70 @@ if __name__== '__main__':
     plt.imshow(imgMiddleSlice,  cm.Greys_r, interpolation='nearest') 
     plt.show()
     
-    jjjaa
+
+
+    
+    
+
+
+#==============================================================================
+# Draft
+#==============================================================================
 
 #==============================================================================
 #     Save Slide
 #==============================================================================
-    #Set the filePath to save    
-    locaPath = os.path.dirname(sys.argv[0])
-    locaPath = 'D:\\MyPythonPosDoc\\P4_Cell_Detection'
-    saveFolder = 'TestData'
-    fileName = 'img2D_0.tif'
-    savePath = os.path.join(locaPath, saveFolder, fileName)   
-    
-    #Change from float to uint8
-    imgMiddleSlice_8bit = imgMiddleSlice.astype(np.uint8)
-    
-    #Save the image
-    isSaved = cv2.imwrite(savePath, imgMiddleSlice_8bit)
-    print(isSaved)
+#    #Set the filePath to save    
+#    locaPath = os.path.dirname(sys.argv[0])
+#    locaPath = 'D:\\MyPythonPosDoc\\P4_Cell_Detection'
+#    saveFolder = 'TestData'
+#    fileName = 'img2D_0.tif'
+#    savePath = os.path.join(locaPath, saveFolder, fileName)   
+#    
+#    #Change from float to uint8
+#    imgMiddleSlice_8bit = imgMiddleSlice.astype(np.uint8)
+#    
+#    #Save the image
+#    isSaved = cv2.imwrite(savePath, imgMiddleSlice_8bit)
+#    print(isSaved)
     
 #==============================================================================
 #   save 3D numpy Array  
 #==============================================================================
-    #Set the filePath to save    
-    locaPath = os.path.dirname(sys.argv[0])
-    locaPath = 'D:\\MyPythonPosDoc\\P4_Cell_Detection'
-    saveFolder = 'TestData'
-    fileName = 'img3D_0.npy'
-    savePath = os.path.join(locaPath, saveFolder, fileName)
-    
-    isSaved = np.save(savePath, img) 
-    print(isSaved)
-    
-    
-    
-    
+#    #Set the filePath to save    
+#    locaPath = os.path.dirname(sys.argv[0])
+#    locaPath = 'D:\\MyPythonPosDoc\\P4_Cell_Detection'
+#    saveFolder = 'TestData'
+#    fileName = 'img3D_0.npy'
+#    savePath = os.path.join(locaPath, saveFolder, fileName)
+#    
+#    isSaved = np.save(savePath, img) 
+#    print(isSaved)
+ 
+ 
+#==============================================================================
+#  Draft: Permutation
+#==============================================================================
+#def get_permutationWithRepetition(v):
+#    comb = np.array(np.meshgrid(v)).T.reshape(-1, len(v)) 
+#    return comb
+#    
+#    
+#    a = np.asarray([1,2,3])    
+#    b = np.asarray([1,2]) 
+#    x, y = np.meshgrid(a,b)
+#    np.dstack((x,y))
+#    v = [a,b]
+#
+#    np.array(np.meshgrid([1, 2, 3], [4, 5], [6, 7])).T.reshape(-1,3)
+#    t = np.array(np.meshgrid(a, b)).T.reshape(-1,2)
+#    t = np.array(np.meshgrid(a, b, b)).T.reshape(-1,3)
+#    np.array(np.meshgrid(a, b)).T
+#    np.array(np.meshgrid(v)).T.reshape(-1,2)
+#    np.meshgrid(*v)
+#    v = [a,b]
+#    v = [a,b,b]
+#    np.array(np.meshgrid(*v)).T.reshape(-1, len(v)) 
     
     
     

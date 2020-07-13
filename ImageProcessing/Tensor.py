@@ -7,6 +7,8 @@ Created on Thu Jun 18 15:01:14 2020
 
 import numpy as np
 from scipy import signal
+import time
+
 
 from ImageFilters import get_DxGaussian, get_Gaussian
 
@@ -25,15 +27,17 @@ def run_Tensor(imgDoGMS, df_Cells, scales):
         ix = np.where(scales==ss[i])[0][0]
         imgMS[i] = imgDoGMS[ix]
     
-    TensorMS = compute_TensorMS(imgMS, ss)
-    df_Cells = compute_PtsTensorMetrics(TensorMS, df_Cells, ss)
+    TensorMS, dt1 = compute_TensorMS(imgMS, ss)
+    df_Cells, dt2 = compute_PtsTensorMetrics(TensorMS, df_Cells.copy(), ss)
 
-    return df_Cells
+    dt = np.asarray([dt1, dt2])
+    return df_Cells, dt
 #==============================================================================
 # 
 #==============================================================================
 def compute_TensorMS(imgDoGMS, scales):
     
+    t0 = time.time()
     ns = scales.shape[0]
     TensorMS = np.empty(ns, dtype=object)
     for i in range(0, ns):
@@ -41,7 +45,8 @@ def compute_TensorMS(imgDoGMS, scales):
         img = imgDoGMS[i]    
         TensorMS[i] = compute_Tensor(img, s)
 
-    return TensorMS
+    dt = time.time()  - t0
+    return TensorMS, dt
     
 def compute_Tensor(img, s):
     #Create
@@ -51,7 +56,7 @@ def compute_Tensor(img, s):
 #    k = 0.05
 #    k = 0.15
     k = 0.25
-    k = 0.50
+#    k = 0.50
 #    k = 2.00
     
     #First Derivative of a Gaussian 
@@ -92,7 +97,8 @@ def compute_Tensor(img, s):
 # 
 #==============================================================================
 def compute_PtsTensorMetrics(TensorMS, dfMS, scales):
-     
+    t0 = time.time()
+ 
     n = dfMS.shape[0]
     v_orientation = np.zeros((n,3))
     v_anisotropy = np.zeros(n)
@@ -130,10 +136,13 @@ def compute_PtsTensorMetrics(TensorMS, dfMS, scales):
     dfMS['Tub'] = v_tubularity
     dfMS['Disk'] = v_disk
     
-    return dfMS
+    dt = time.time()  - t0
+    return dfMS, dt
 
 
-def compute_TensorMetrics(T):    
+def compute_TensorMetrics(T):  
+    
+    
     #Eigenvalues
     eigVal, eigVec = np.linalg.eig(T) 
 

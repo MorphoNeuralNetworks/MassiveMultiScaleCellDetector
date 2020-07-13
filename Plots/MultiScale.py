@@ -40,7 +40,7 @@ def plot_DetectedCells(imgIn, df_Cells):
     graphSize = m*nx*graphSize[0], m*ny*graphSize[1]    
     fig.set_size_inches(graphSize)
 
-    x, y, z, s = df_Cells['Y'].values, df_Cells['X'].values, df_Cells['Z'].values, df_Cells['S'].values
+    x, y, z, s = df_Cells['X'].values, df_Cells['Y'].values, df_Cells['Z'].values, df_Cells['S'].values
     k = 3
     interMethod = 'nearest'
     interMethod = 'bicubic'
@@ -116,7 +116,7 @@ def plot_3DResults(imgIn, df_Cells):
     plot3D_3DMIP(ax, imgIn) 
     
     #Plot Cells
-    xyzs = df_Cells['Y'].values, df_Cells['X'].values, df_Cells['Z'].values, df_Cells['S'].values
+    xyzs = df_Cells['X'].values, df_Cells['Y'].values, df_Cells['Z'].values, df_Cells['S'].values
     plot3D_Scatter(ax, xyzs)
     
 #    plt.show()
@@ -231,7 +231,7 @@ def plot_2DResult(imgIn, df_Cells):
     
     #Ploting: Circles
     ax = axs[1,:]
-    xyzsi = df_Cells['Y'].values, df_Cells['X'].values, df_Cells['Z'].values, df_Cells['S'].values, df_Cells.index.values
+    xyzsi = df_Cells['X'].values, df_Cells['Y'].values, df_Cells['Z'].values, df_Cells['S'].values, df_Cells.index.values
     plot_LocalMaxCircles(ax, xyzsi, imgDim)
         
 
@@ -277,12 +277,12 @@ def plot_MultiScaleAnalysis(imgIn, scales, imgOutMS, df_MaxMS):
         
         #Ploting: Local Maxima       
         ax = axs[even_index[i],:]
-        xyz = df_Max['Y'].values, df_Max['X'].values, df_Max['Z'].values
+        xyz = df_Max['X'].values, df_Max['Y'].values, df_Max['Z'].values
         plot_LocalMaxPosition(ax, xyz, imgDim)
         
         #Ploting: Circles
         ax = axs[even_index[i],:]
-        xyzsi = df_Max['Y'].values, df_Max['X'].values, df_Max['Z'].values, df_Max['S'].values, df_Max.index.values
+        xyzsi = df_Max['X'].values, df_Max['Y'].values, df_Max['Z'].values, df_Max['S'].values, df_Max.index.values
         plot_LocalMaxCircles(ax, xyzsi, imgDim)
 
 
@@ -580,7 +580,7 @@ def save_Results(imgIn, df_Cells, rootPath, folderPath, fileName):
 #==============================================================================
 #    
 #==============================================================================
-def plot_2DResultTensor(imgIn, df_Cells):
+def plot_2DResultTensor(imgIn, df_Cells, overlap):
         
     #Initialization: Set the Dimensions of the Figure as a function of the number of spatial scales
     ny, nx = 1, 3
@@ -601,15 +601,45 @@ def plot_2DResultTensor(imgIn, df_Cells):
     
     #Ploting: Circles
     ax = axs
-    xyzsi = df_Cells['Y'].values, df_Cells['X'].values, df_Cells['Z'].values, df_Cells['S'].values, df_Cells.index.values
+    xyzsi = df_Cells['X'].values, df_Cells['Y'].values, df_Cells['Z'].values, df_Cells['S'].values, df_Cells.index.values
     plot_LocalMaxCircles(ax, xyzsi, imgDim)
       
     #Ploting: Orientation
     ori = df_Cells['Vx'].values, df_Cells['Vy'].values, df_Cells['Vz'].values
     plot_LocalOrientations(ax, xyzsi, ori)
     
+    #Ploting: Overlap
+    plot_Overlap(axs, overlap, imgDim)
+    
     return fig, axs
 
+
+def plot_Overlap(axs, overlap, imgDim):
+    ny, nx, nz = imgDim
+    kx, ky, kz = overlap
+  
+
+    ax = axs[0]
+    ax.hlines(y=kz,     xmin=ax.axes.get_xlim()[0], xmax=ax.axes.get_xlim()[1], linestyle='--', color='r', alpha=0.5)
+    ax.hlines(y=nz-kz,  xmin=ax.axes.get_xlim()[0], xmax=ax.axes.get_xlim()[1], linestyle='--', color='r', alpha=0.5)
+    ax.vlines(x=ky,     ymin=ax.axes.get_ylim()[0], ymax=ax.axes.get_ylim()[1], linestyle='--', color='r', alpha=0.5)
+    ax.vlines(x=ny-ky,  ymin=ax.axes.get_ylim()[0], ymax=ax.axes.get_ylim()[1], linestyle='--', color='r', alpha=0.5)
+
+    ax = axs[1]
+    ax.hlines(y=kx,     xmin=ax.axes.get_xlim()[0], xmax=ax.axes.get_xlim()[1], linestyle='--', color='r', alpha=0.5)
+    ax.hlines(y=nx-kx,  xmin=ax.axes.get_xlim()[0], xmax=ax.axes.get_xlim()[1], linestyle='--', color='r', alpha=0.5)
+    ax.vlines(x=ky,     ymin=ax.axes.get_ylim()[0], ymax=ax.axes.get_ylim()[1], linestyle='--', color='r', alpha=0.5)
+    ax.vlines(x=ny-ky,  ymin=ax.axes.get_ylim()[0], ymax=ax.axes.get_ylim()[1], linestyle='--', color='r', alpha=0.5)
+
+    ax = axs[2]
+    ax.hlines(y=kx,     xmin=ax.axes.get_xlim()[0], xmax=ax.axes.get_xlim()[1], linestyle='--', color='r', alpha=0.5)
+    ax.hlines(y=nx-kx,  xmin=ax.axes.get_xlim()[0], xmax=ax.axes.get_xlim()[1], linestyle='--', color='r', alpha=0.5)
+    ax.vlines(x=kz,     ymin=ax.axes.get_ylim()[0], ymax=ax.axes.get_ylim()[1], linestyle='--', color='r', alpha=0.5)
+    ax.vlines(x=nz-kz,  ymin=ax.axes.get_ylim()[0], ymax=ax.axes.get_ylim()[1], linestyle='--', color='r', alpha=0.5)
+
+        
+    
+    
 def plot_LocalOrientations(axs, xyzsi, ori):
     
     x, y, z, s, ix = xyzsi
@@ -639,6 +669,77 @@ def plot_LocalOrientations(axs, xyzsi, ori):
 #        ax.quiver(x0, z0, v[0], v[2],  units = 'xy', scale = 2, color='r')
     
 
+
+#==============================================================================
+#   Results: Visualization Intermediate Results
+#==============================================================================
+def plot_InterMediateResult(imgIn, df_All, df_Cells0, df_Cells1, df_Cells2, df_Cells3):
+
+        n_decimals = 2
+        print('')
+        print('-------------------------------------------------------')
+        print('-----------0) MultiScale Detection Algorithm------------')
+        print('-------------------------------------------------------') 
+        df_Cells = df_All
+        fig, axs = plot_2DResult(imgIn, df_Cells)
+        fig.tight_layout(h_pad=1.0)  
+        plt.show() 
+        print('')
+        print('N_cells', df_Cells.shape[0])
+        print('Table:')
+        print(np.round(df_Cells, n_decimals))
+        
+        print('')
+        print('-------------------------------------------------------')
+        print('-----------0) After Cell Detection Algorithm-----------')
+        print('-------------------------------------------------------') 
+        df_Cells = df_Cells0
+        fig, axs = plot_2DResult(imgIn, df_Cells)
+        fig.tight_layout(h_pad=1.0)  
+        plt.show() 
+        print('')
+        print('N_cells', df_Cells.shape[0])
+        print('Table:')
+        print(np.round(df_Cells, n_decimals))
+    
+        print('')
+        print('-------------------------------------------------------')
+        print('----------1) After Intensity Threholding---------------')
+        print('-------------------------------------------------------')  
+        df_Cells = df_Cells1
+        fig, axs = plot_2DResult(imgIn, df_Cells)
+        fig.tight_layout(h_pad=1.0)  
+        plt.show() 
+        print('')
+        print('N_cells', df_Cells.shape[0])
+        print('Table:')
+        print(np.round(df_Cells, n_decimals))
+
+        print('')
+        print('-------------------------------------------------------')
+        print('----------2) After Scale Thresholding---------------')
+        print('-------------------------------------------------------')  
+        df_Cells = df_Cells2
+        fig, axs = plot_2DResult(imgIn, df_Cells)
+        fig.tight_layout(h_pad=1.0)  
+        plt.show() 
+        print('')
+        print('N_cells', df_Cells.shape[0])
+        print('Table:')
+        print(np.round(df_Cells, n_decimals))
+        
+        print('')
+        print('-------------------------------------------------------')
+        print('----------3) After Tensor Algorithm--------------------')
+        print('-------------------------------------------------------') 
+        df_Cells = df_Cells3
+        fig, axs = plot_2DResultTensor(imgIn, df_Cells)
+        fig.tight_layout(h_pad=1.0)  
+        plt.show() 
+        print('')
+        print('N_cells', df_Cells.shape[0])
+        print('Table:')
+        print(np.round(df_Cells, n_decimals))
 
 if __name__== '__main__': 
       

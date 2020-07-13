@@ -7,7 +7,17 @@ Created on Wed May 20 23:23:50 2020
 
 from pathlib import Path 
 import cv2
+import tifffile
+import os
 
+
+def save3Dimage_as3DStack(img3D, folderPath, fileName):
+    
+    #Saving the Image
+    fileExtension = '.tif'
+    filePath = os.path.join(folderPath, fileName + fileExtension)    
+    tifffile.imwrite(filePath, img3D, photometric='minisblack') 
+    
 
 def save3Dimage_as2DSeries(img3D, folderPath, imgFormat='.tif'):
     folderPath = Path(folderPath)

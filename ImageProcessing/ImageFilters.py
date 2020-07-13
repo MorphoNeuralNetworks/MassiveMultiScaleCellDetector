@@ -500,6 +500,7 @@ if __name__== '__main__':
 #    s = [7.0, 7.0]
 #    s = [7.0, 2.0]
 #    s = [2.0, 7.0]
+    s = [12.0, 12.0]
 #     
 #    #3D-Sigmas
 #    s = [2.0, 2.0, 2.0]
@@ -515,7 +516,7 @@ if __name__== '__main__':
 #    F = get_DxGaussian(s, a=2.0) 
 #    F = doggen(s)
     F = get_DoG(s, rS=1.1, a=1.0)
-    F = get_DoG(s, rS=1.1, rV=0.96, a=1.0)
+#    F = get_DoG(s, rS=1.1, rV=0.96, a=1.0)
 #    F = get_DoG(s, rS=3.5, a=1.0)
     
     #Transpose

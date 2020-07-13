@@ -12,7 +12,7 @@ import time
 from ImageFilters import get_DoG
 from skimage.feature import peak_local_max
 
-#from scipy import signal
+from scipy import signal
 #import cv2
 
 
@@ -60,7 +60,7 @@ def compute_SecondDerivativeMS(imgIn, scales, rS, rV):
 
     
     #Specific Initialization due to the Convolution in the Frequency Domain
-    imgIn_fft = np.fft.fftn(imgIn)
+#    imgIn_fft = np.fft.fftn(imgIn)
 
     for i in range(0,ns): 
         #Get the i-th scale 
@@ -72,13 +72,13 @@ def compute_SecondDerivativeMS(imgIn, scales, rS, rV):
         
         #Compute: Convolve an 3DImage with a 3D Filter (Computing Mode: Frequency Domain)        
         #Op1        
-        Fxyz_fft =  np.fft.fftn(Fxyz, (imgIn_fft.shape))
-        imgOut_fft = imgIn_fft*np.abs(Fxyz_fft)
-        imgOut =     np.fft.ifftn(imgOut_fft)
-        imgOut = imgOut.real
+#        Fxyz_fft =  np.fft.fftn(Fxyz, (imgIn_fft.shape))
+#        imgOut_fft = imgIn_fft*np.abs(Fxyz_fft)
+#        imgOut =     np.fft.ifftn(imgOut_fft)
+#        imgOut = imgOut.real
         
         #Op2
-#        imgOut = signal.convolve(imgIn, Fxyz, "same")
+        imgOut = signal.convolve(imgIn, Fxyz, "same")
         
     
 #        #Visualize
@@ -108,7 +108,9 @@ def compute_SpatialMaximaMS(imgIn, imgDoGMS, scales, I_threshold=0.0):
         
         #Compute: Local Maxima of hte 
         xyz_coord, I0, I = compute_SpatialMaxima(imgIn, imgOut, scale)
-
+        
+        xyz_coord[:,[0, 1]] = xyz_coord[:,[1, 0]]        
+        
         #Store the                  
         S = scale*np.ones(I.shape[0])
         #data = np.column_stack((S, xyz_coord, I))
@@ -250,21 +252,38 @@ def remove_FalseCells_with_LowScaleCount(df_Cells, scaleCountThreshold):
     return df_Cells
 
 #Based on the Cell Intensity
-def remove_FalseCells_with_LowIntensity(df_Cells, intensityRatio):    
+def remove_FalseCells_with_LowIntensity(df_Cells, I_threshold, mode='absolute'):    
 
-    if (intensityRatio>=0)&(intensityRatio<=1):
-        maskBool = df_Cells['I']<intensityRatio*(df_Cells['I'].max())
-#        maskBool = df_Cells['I0']<intensityRatio*(df_Cells['I0'].max())
+    if mode=='absolute':
+        maskBool = df_Cells['I']<I_threshold
+        
+    elif mode=='relative':
+        if (I_threshold>0)&(I_threshold<=1):
+            maskBool = df_Cells['I']<I_threshold*(df_Cells['I'].max())
+        else:
+            print('')
+            print('remove_LowIntensityDetections')
+            print('The "I_threhold" argument must be within (0...1]')
     else:
-        print('')
-        print('remove_LowIntensityDetections')
-        print('The "I_threhold" argument must be within (0...1]')
-
+            print('')
+            print('remove_LowIntensityDetections')
+            print('The "mode" argument must be "absolute" or "relative"')
     
     ix = maskBool.index
     ix = ix[maskBool] 
     df_Cells = df_Cells.drop(ix)
     return df_Cells
+
+#==============================================================================
+# Other function
+#==============================================================================
+
+def get_spatialScaleRangeInPixels(r_min_um, r_max_um, resolution):
+    res_min = np.min(resolution)
+    r_min_px = int(np.floor(r_min_um/res_min))
+    r_max_px = int(np.ceil(r_max_um/res_min))      
+    scales = np.arange(r_min_px, r_max_px + 1 , dtype=np.float)
+    return scales
 
 #==============================================================================
 #     
@@ -329,8 +348,25 @@ if __name__== '__main__':
 #    df_Cells = df_Cells.drop(ix)
 #    return df_Cells
 
-
-
+#==============================================================================
+# 
+#==============================================================================
+##Based on the Cell Intensity
+#def remove_FalseCells_with_LowIntensity(df_Cells, intensityRatio):    
+#
+#    if (intensityRatio>=0)&(intensityRatio<=1):
+#        maskBool = df_Cells['I']<intensityRatio*(df_Cells['I'].max())
+##        maskBool = df_Cells['I0']<intensityRatio*(df_Cells['I0'].max())
+#    else:
+#        print('')
+#        print('remove_LowIntensityDetections')
+#        print('The "I_threhold" argument must be within (0...1]')
+#
+#    
+#    ix = maskBool.index
+#    ix = ix[maskBool] 
+#    df_Cells = df_Cells.drop(ix)
+#    return df_Cells
 #==============================================================================
 # 
 #==============================================================================
