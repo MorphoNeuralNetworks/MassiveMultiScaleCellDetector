@@ -130,6 +130,8 @@ def compute_SpatialMaximaMS(imgIn, imgDoGMS, scales, I_threshold=0.0):
 #1.2.1) Compute the Local Maxima at a single Spatial Scale   
 def compute_SpatialMaxima(imgIn, img3D, scale, threshold=0.0, k=1.0):
     #Get the radius of the Spheric Volume over which compute the Maximum 
+    k=1.0    
+    k=0.5
     d_min = k*scale
     
     #Compute: Local Maxima at  the i-th scale    

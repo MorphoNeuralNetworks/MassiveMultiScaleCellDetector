@@ -92,6 +92,25 @@ def get_Odd(num):
         num = num + 1
     return num
         
+
+#==============================================================================
+# 
+#==============================================================================
+
+def read_MergedImage(rootPathImg, v_xyz_ani, dissectionSize_ani):
+    
+    #Get    
+    xyz_origin = v_xyz_ani[0]  - (dissectionSize_ani - 1)/2 
+    xyz_final  = v_xyz_ani[-1]  + (dissectionSize_ani - 1)/2 
+    dissectionSize = xyz_final - xyz_origin
+    xyz_center = xyz_origin + dissectionSize//2
+    
+    #Read image
+    imgIn = read_ImagePatch(rootPathImg, xyz_center, dissectionSize)
+
+    return imgIn
+
+
 if __name__== '__main__':
   
   

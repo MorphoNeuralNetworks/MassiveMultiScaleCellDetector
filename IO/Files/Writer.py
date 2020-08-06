@@ -36,8 +36,8 @@ def save_Vaa3DMarker(df_Cells, imgDim, folderPath, fileName):
     #Change the Axis Reference System
     nx, ny, nz = imgDim
     df['X'] = df_Cells['Z']  
-    df['Y'] = nx - df_Cells['X'] 
-    df['Z'] =  df_Cells['Y'] 
+    df['Y'] = (nx - df_Cells['X'])
+    df['Z'] = df_Cells['Y'] 
     
     
     
@@ -56,6 +56,44 @@ def save_Vaa3DMarker(df_Cells, imgDim, folderPath, fileName):
     filePath = os.path.join(folderPath, fileName + fileExtension)  
     df.to_csv(filePath, sep=',', encoding='utf-8', index=False, header = False)    
 
+
+def save_Vaa3DMarker_Abs(df_Cells, origin, imgDim, folderPath, fileName):
+
+    #Create Folder
+    if not os.path.exists(folderPath):
+        os.makedirs(folderPath)    
+        
+    #Creater the Vaa3D Marker Format
+    df = pd.DataFrame()
+    n = df_Cells.shape[0]
+    
+    #Change the Axis Reference System
+    nx, ny, nz = imgDim   
+    
+    
+    #Change the Axis Reference System
+    df['X'] = -origin[2] + df_Cells['Z_abs'] 
+    df['Y'] =  nx - (df_Cells['X_abs'] - origin[0])  
+    df['Z'] = -origin[1] + df_Cells['Y_abs'] 
+    
+    
+    #Other Features
+    df['R'] = 100*df_Cells['S']     
+    df['shape'] = np.zeros(n)
+    df['name'] =  df_Cells.index.values
+    df['comment'] = n*['0']
+    df['cR'] = 255*np.ones(n)
+    df['cG'] = 0*np.ones(n)
+    df['cB'] = 0*np.ones(n)
+    
+    df = df.astype(int)
+    
+    #Saving the Marker File
+    fileExtension = '.marker'
+    filePath = os.path.join(folderPath, fileName + fileExtension)  
+    df.to_csv(filePath, sep=',', encoding='utf-8', index=False, header = False) 
+    
+    
 def save_Figure(fig, folderPath, fileName):
     #Saving the Matplotlib Figure
     graph_dpi = 150

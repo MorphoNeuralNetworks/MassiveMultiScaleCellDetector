@@ -608,7 +608,7 @@ def plot_2DResultTensor(imgIn, df_Cells, overlap):
     ori = df_Cells['Vx'].values, df_Cells['Vy'].values, df_Cells['Vz'].values
     plot_LocalOrientations(ax, xyzsi, ori)
     
-    #Ploting: Overlap
+    #Ploting: Overlap    
     plot_Overlap(axs, overlap, imgDim)
     
     return fig, axs
@@ -673,7 +673,7 @@ def plot_LocalOrientations(axs, xyzsi, ori):
 #==============================================================================
 #   Results: Visualization Intermediate Results
 #==============================================================================
-def plot_InterMediateResult(imgIn, df_All, df_Cells0, df_Cells1, df_Cells2, df_Cells3):
+def plot_InterMediateResult(imgIn, df_All, df_Cells0, df_Cells1, df_Cells2, df_Cells3, overlap):
 
         n_decimals = 2
         print('')
@@ -733,7 +733,7 @@ def plot_InterMediateResult(imgIn, df_All, df_Cells0, df_Cells1, df_Cells2, df_C
         print('----------3) After Tensor Algorithm--------------------')
         print('-------------------------------------------------------') 
         df_Cells = df_Cells3
-        fig, axs = plot_2DResultTensor(imgIn, df_Cells)
+        fig, axs = plot_2DResultTensor(imgIn, df_Cells, overlap)
         fig.tight_layout(h_pad=1.0)  
         plt.show() 
         print('')

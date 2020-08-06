@@ -57,6 +57,7 @@ def compute_Tensor(img, s):
 #    k = 0.15
     k = 0.25
 #    k = 0.50
+#    k = 1.00
 #    k = 2.00
     
     #First Derivative of a Gaussian 
