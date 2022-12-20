@@ -1,0 +1,14 @@
+{
+ "pathFolder_ReadImage": "C:\\Users\\aarias\\MySpyderProjects\\p6_Cell_v16_Clean_GitHub\\Examples\\MiniTest", 
+ "pathFolder_WriteResults": "C:\\Users\\aarias\\MySpyderProjects\\p6_Cell_v16_Clean_GitHub\\Results\\mainTest", 
+ "voxelSize_VisIn_um": [
+  0.45, 
+  0.45, 
+  2.0
+ ], 
+ "voxelSize_VisOut_um": [
+  2.0, 
+  2.0, 
+  2.0
+ ]
+}

@@ -5,6 +5,9 @@ Created on Mon Jul 20 19:20:03 2020
 @author: pc
 """
 
+import time
+import pandas as pd
+import numpy as np
 
 #==============================================================================
 # 
@@ -37,6 +40,123 @@ def get_overlapMask(xyzCells, origin, overlap, imgDim):
                 (z < z0)|(z > z1)
                 ) 
     return boolMask
+
+
+#==============================================================================
+#   Remove MultipleDetection in the Ovelap Table   
+#==============================================================================
+def remove_MultipleDetection(df_Overlap, df_Origins, scannerSize_Out_px):
+    start = time.time()
+    # Save a BackUp 
+    df_Overlap_In = df_Overlap.copy()    
+
+    # Create an empty DataFrame to fill in without MultipleDetections
+    df_Out = pd.DataFrame()
+    
+    # Get all Origins (aka refs)
+    df_Cubes = df_Origins.groupby(['X_ref_out_px', 'Y_ref_out_px', 'Z_ref_out_px']).size().reset_index().rename(columns={0:'count'})
+    # df_Cubes = df_Overlap_In.groupby(['X_ref_out_px', 'Y_ref_out_px', 'Z_ref_out_px']).size().reset_index().rename(columns={0:'count'})
+    
+    # ??? Loop: Select one Overlaping Volume belonging to a Cube
+    n_Cubes = df_Cubes.shape[0]
+    for i in range(0, n_Cubes): # i = 0
+        
+        #Select a Current Cube
+        df_Cube = df_Cubes.iloc[i]
+        
+        #Get the Cubes Around (i.e. the closest neighbours of the Current Cube)
+        r = np.sqrt((df_Cubes['X_ref_out_px'] - df_Cube['X_ref_out_px'])**2 + 
+                    (df_Cubes['Y_ref_out_px'] - df_Cube['Y_ref_out_px'])**2 +
+                    (df_Cubes['Z_ref_out_px'] - df_Cube['Z_ref_out_px'])**2 
+                    )
+        #Note:
+        # the minimum distance to the next cube is the side of the cube (l)
+        # but the maximum distance to the next cube is the diagonal (h=sqrt(l**2 + l**2)=sqrt(2)*l)
+        R = scannerSize_Out_px.mean()
+        R = 1.2*(np.sqrt(2)*R)
+        mask = (r>0) & (r<R)
+        df_CubesAround = df_Cubes[mask]
+
+        #Select Detections from the Cube 
+        mask = ((df_Overlap_In['X_ref_out_px'] == df_Cube['X_ref_out_px']) &
+                (df_Overlap_In['Y_ref_out_px'] == df_Cube['Y_ref_out_px']) &
+                (df_Overlap_In['Z_ref_out_px'] == df_Cube['Z_ref_out_px']) )    
+        df_CubeDetections = df_Overlap_In[mask]
+        
+        # ??? loop
+        df_CubeAroundDetections = pd.DataFrame()
+        n_CubesAround = df_CubesAround.shape[0]
+        if n_CubesAround!=0:
+            for j in range(0, n_CubesAround): # j = 0
+                
+                # Select one Cube Around
+                df_CubeAround = df_CubesAround.iloc[j]
+                
+                # Select Detections from the (Current) Around Cube
+                mask = ((df_Overlap_In['X_ref_out_px'] == df_CubeAround['X_ref_out_px']) &
+                        (df_Overlap_In['Y_ref_out_px'] == df_CubeAround['Y_ref_out_px']) &
+                        (df_Overlap_In['Z_ref_out_px'] == df_CubeAround['Z_ref_out_px']) ) 
+                df_CubeAroundDetections = df_CubeAroundDetections.append(df_Overlap_In[mask])
+      
+                
+            # ????? Loop
+            ix = []
+            ix = pd.DataFrame()
+    
+            n_CubeDetections = df_CubeDetections.shape[0]
+            for k in range(0, n_CubeDetections): # k = 0
+                
+                # Select One Detection    
+                df_CubeDetection = df_CubeDetections.iloc[k]
+            
+                #Select a Detection with a inner detection
+                r = np.sqrt((df_CubeAroundDetections['X_abs_out_px'] - df_CubeDetection['X_abs_out_px'])**2 + 
+                            (df_CubeAroundDetections['Y_abs_out_px'] - df_CubeDetection['Y_abs_out_px'])**2 +
+                            (df_CubeAroundDetections['Z_abs_out_px'] - df_CubeDetection['Z_abs_out_px'])**2 
+                            )
+                mask = (r<=df_CubeDetection['S']) 
+                df_Repited = df_CubeAroundDetections[mask]
+                
+                # Merge   
+                df_Repited = df_Repited.append(df_CubeDetection, ignore_index=False)
+                
+                # Get only those MultipleDetection with the highest I_DoG and stored at df_out
+                mask = (df_Repited['I_DoG']==df_Repited['I_DoG'].max())
+                df_Unique = df_Repited[mask]
+                df_Out = df_Out.append(df_Unique)
+                
+                # Remove Processed Points from df_Overlap to avoid process them multiple times (to speed up the loops)
+                # df_Overlap_In = df_Overlap_In.drop(df_Repited.index)
+                ix = ix.append(list(df_Repited.index))
+                
+            # jajaj
+            ix = np.unique(ix)
+            df_Overlap_In = df_Overlap_In.drop(list(ix))
+                        
+                # Verbose
+                # print()
+                # print('k=',k)
+                # print(r.min(), r.max())
+                # print(df_Repited[['X_abs_out_px', 'Y_abs_out_px', 'Z_abs_out_px', 'S', 'I_DoG']])
+                # print(df_Repited[['X_ref_out_px', 'Y_ref_out_px', 'Z_ref_out_px']])
+                
+    print()
+    print('End')
+    
+    print()
+    print('Check: The DataFrame should be Empty')
+    print(df_Overlap_In)
+    # df_OverlapOut = df_Out.drop_duplicates(subset=['X_abs_out_px', 'Y_abs_out_px', 'Z_abs_out_px'])
+    
+    #Time
+    stop = time.time()
+    dt_removeMultiDetections = stop - start
+    
+    print()
+    print('dt_removeMultiDetections \n', dt_removeMultiDetections)
+
+    return df_Out
+
 
 #==============================================================================
 # 

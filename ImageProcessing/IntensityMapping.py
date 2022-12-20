@@ -11,7 +11,7 @@ import numpy as np
 import os
 import sys
 
-import cv2
+# import cv2
 
 #Ploting Library
 from matplotlib import pyplot as plt
@@ -29,14 +29,19 @@ def change_ImageIntensityMap(A, x0, x1, y0, y1):
    
 #     B = np.round()
 #    B = np.uint8(B)       
-if __name__== '__main__':    
+if __name__== '__main__':  
+    
+    img = np.asarray([265, 500])
+    bitDepth = 16
+    change_ImageIntensityMap(img, x0=0, x1=2**bitDepth-1, y0=-1, y1=+1)
+    jaja
     
     #Set the filePath to save    
     locaPath = 'D:\\MyPythonPosDoc\\P4_Cell_Detection'
     imgFolder = 'TestData'
     imgName = 'img2D_0.tif'
     imgPath = os.path.join(locaPath, imgFolder, imgName)    
-    img = cv2.imread(imgPath, -1)
+    # img = cv2.imread(imgPath, -1)
     
 #==============================================================================
 #     

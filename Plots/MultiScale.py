@@ -109,9 +109,6 @@ def plot_3DResults(imgIn, df_Cells):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     
-#    print'hijooooooo'
-#    print(fig.dpi)
-#    
     #Plot: MIPs
     plot3D_3DMIP(ax, imgIn) 
     
@@ -288,7 +285,10 @@ def plot_MultiScaleAnalysis(imgIn, scales, imgOutMS, df_MaxMS):
 
         #Ploting: MiddleSection
         ax = axs[odd_index[i], :]
-        plot3D_MiddleSections(ax, imgIn, imgOut, scale)
+        ymax = 1.1*df_MaxMS['I_DoG'].max()
+        plot3D_MiddleSections(ax, imgIn, imgOut, scale, ymax)
+        # ax.set_ylim([-2.5, +2.5])
+        
 
     
      
@@ -442,7 +442,7 @@ def get_xyzMIP(img3D):
     xyzMIP = [MIPx, MIPy, MIPz ]
     return  xyzMIP  
 
-def plot3D_MiddleSections(axs, imgIn, imgOut, scale): 
+def plot3D_MiddleSections(axs, imgIn, imgOut, scale, ymax): 
 #    print('--------------')    
 #    print('', imgIn.shape)
 #    print('', imgOut.shape)
@@ -460,16 +460,19 @@ def plot3D_MiddleSections(axs, imgIn, imgOut, scale):
     plotTitle = r'$R_{x}=$' +  '{:0.1f}'.format(scale)
     ax.set_title(plotTitle)
     plot_MiddleSection(ax, x2_In, x2_Out)
+    ax.set_ylim([-ymax, +ymax])
   
     ax = axs[0]
     plotTitle = r'$R_{y}=$' +  '{:0.1f}'.format(scale)
     ax.set_title(plotTitle)
     plot_MiddleSection(ax, y2_In, y2_Out)
+    ax.set_ylim([-ymax, +ymax])
    
     ax = axs[2]
     plotTitle = r'$R_{z}=$' +  '{:0.1f}'.format(scale)
     ax.set_title(plotTitle)
     plot_MiddleSection(ax, z2_In, z2_Out)
+    ax.set_ylim([-ymax, +ymax])
 
        
 def plot_MiddleSection(ax, xIn, xOut):
@@ -480,8 +483,8 @@ def plot_MiddleSection(ax, xIn, xOut):
     ax.set_xlim([0, n])
     ax.set_ylim([-2.5, +2.5])
 #    ax.set_aspect('auto')
-    ax.hlines(y=0,     xmin=ax.axes.get_xlim()[0], xmax=ax.axes.get_xlim()[1], linestyle='--', color='90')
-    ax.vlines(x=n//2, ymin=ax.axes.get_ylim()[0], ymax=ax.axes.get_ylim()[1], linestyle='--', color='90')
+    ax.hlines(y=0,     xmin=ax.axes.get_xlim()[0], xmax=ax.axes.get_xlim()[1], linestyle='--', color='0.90')
+    ax.vlines(x=n//2, ymin=ax.axes.get_ylim()[0], ymax=ax.axes.get_ylim()[1], linestyle='--', color='0.90')
     ax.legend()
 
 
@@ -609,6 +612,10 @@ def plot_2DResultTensor(imgIn, df_Cells, overlap):
     plot_LocalOrientations(ax, xyzsi, ori)
     
     #Ploting: Overlap    
+    print()
+    print( 'Ploting: Overlap')
+    print(overlap)
+    print(imgDim)
     plot_Overlap(axs, overlap, imgDim)
     
     return fig, axs
@@ -702,44 +709,44 @@ def plot_InterMediateResult(imgIn, df_All, df_Cells0, df_Cells1, df_Cells2, df_C
         print('Table:')
         print(np.round(df_Cells, n_decimals))
     
-        print('')
-        print('-------------------------------------------------------')
-        print('----------1) After Intensity Threholding---------------')
-        print('-------------------------------------------------------')  
-        df_Cells = df_Cells1
-        fig, axs = plot_2DResult(imgIn, df_Cells)
-        fig.tight_layout(h_pad=1.0)  
-        plt.show() 
-        print('')
-        print('N_cells', df_Cells.shape[0])
-        print('Table:')
-        print(np.round(df_Cells, n_decimals))
+        # print('')
+        # print('-------------------------------------------------------')
+        # print('----------1) After Intensity Threholding---------------')
+        # print('-------------------------------------------------------')  
+        # df_Cells = df_Cells1
+        # fig, axs = plot_2DResult(imgIn, df_Cells)
+        # fig.tight_layout(h_pad=1.0)  
+        # plt.show() 
+        # print('')
+        # print('N_cells', df_Cells.shape[0])
+        # print('Table:')
+        # print(np.round(df_Cells, n_decimals))
 
-        print('')
-        print('-------------------------------------------------------')
-        print('----------2) After Scale Thresholding---------------')
-        print('-------------------------------------------------------')  
-        df_Cells = df_Cells2
-        fig, axs = plot_2DResult(imgIn, df_Cells)
-        fig.tight_layout(h_pad=1.0)  
-        plt.show() 
-        print('')
-        print('N_cells', df_Cells.shape[0])
-        print('Table:')
-        print(np.round(df_Cells, n_decimals))
+        # print('')
+        # print('-------------------------------------------------------')
+        # print('----------2) After Scale Thresholding---------------')
+        # print('-------------------------------------------------------')  
+        # df_Cells = df_Cells2
+        # fig, axs = plot_2DResult(imgIn, df_Cells)
+        # fig.tight_layout(h_pad=1.0)  
+        # plt.show() 
+        # print('')
+        # print('N_cells', df_Cells.shape[0])
+        # print('Table:')
+        # print(np.round(df_Cells, n_decimals))
         
-        print('')
-        print('-------------------------------------------------------')
-        print('----------3) After Tensor Algorithm--------------------')
-        print('-------------------------------------------------------') 
-        df_Cells = df_Cells3
-        fig, axs = plot_2DResultTensor(imgIn, df_Cells, overlap)
-        fig.tight_layout(h_pad=1.0)  
-        plt.show() 
-        print('')
-        print('N_cells', df_Cells.shape[0])
-        print('Table:')
-        print(np.round(df_Cells, n_decimals))
+        # print('')
+        # print('-------------------------------------------------------')
+        # print('----------3) After Tensor Algorithm--------------------')
+        # print('-------------------------------------------------------') 
+        # df_Cells = df_Cells3
+        # fig, axs = plot_2DResultTensor(imgIn, df_Cells, overlap)
+        # fig.tight_layout(h_pad=1.0)  
+        # plt.show() 
+        # print('')
+        # print('N_cells', df_Cells.shape[0])
+        # print('Table:')
+        # print(np.round(df_Cells, n_decimals))
 
 if __name__== '__main__': 
       

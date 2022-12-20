@@ -1,0 +1,36 @@
+{
+ "pathFolder_ReadImage": "C:\\Users\\aarias\\MySpyderProjects\\p6_Cell_v16_Clean_GitHub\\Examples\\MiniTest", 
+ "pathFolder_WriteResults": "C:\\Users\\aarias\\MySpyderProjects\\p6_Cell_v16_Clean_GitHub\\Results\\mainTest", 
+ "xyzStart": [
+  0, 
+  0, 
+  0
+ ], 
+ "xyzStop": [
+  545, 
+  566, 
+  91
+ ], 
+ "dimXYZ": [
+  546, 
+  567, 
+  92
+ ], 
+ "voxelSize_DetIn_um": [
+  0.45, 
+  0.45, 
+  2.0
+ ], 
+ "voxelSize_DetOut_um": [
+  2.0, 
+  2.0, 
+  2.0
+ ], 
+ "cellRadiusMin_um": 5, 
+ "cellRadiusMax_um": 15, 
+ "nScales": 8, 
+ "computingCubeSize": 3, 
+ "computingCubeOverlap": 0, 
+ "computeTensor": false, 
+ "nProcess": 2
+}

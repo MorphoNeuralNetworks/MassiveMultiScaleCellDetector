@@ -470,7 +470,7 @@ def doggen(sigma):
           k = -X * np.exp(np.divide(-np.power(X, 2), 2 * np.power(sigma[0], 2))) * np.exp(np.divide(-np.power(Y,2), 2 * np.power(sigma[1],2))) * np.exp(np.divide(-np.power(Z,2), 2 * np.power(sigma[2],2)))
 
       else:
-          print 'Only supports up to 3 dimensions'
+          print ('Only supports up to 3 dimensions')
 
       
       k_norm = (np.sum(np.abs(k[:])))
@@ -503,25 +503,25 @@ if __name__== '__main__':
     s = [12.0, 12.0]
 #     
 #    #3D-Sigmas
-#    s = [2.0, 2.0, 2.0]
+    # s = [2.0, 2.0, 2.0]
 #    s = [3.0, 3.0, 3.0]
-#    s = [7.0, 7.0, 7.0]
+    s = [7.0, 7.0, 7.0]
 #    s = [7.0, 7.0, 2.0]
 #    s = [2.0, 2.0, 7.0]
 #    s = [2.0, 5.0, 7.0]
     
 
     F = get_Gaussian(s, a=1.0)
-    F = get_DxGaussian(s, a=0.25)    
+    F = get_DxGaussian(s, a=0.25)   
 #    F = get_DxGaussian(s, a=2.0) 
 #    F = doggen(s)
-    F = get_DoG(s, rS=1.1, a=1.0)
+    # F = get_DoG(s, rS=1.1, a=1.0)
 #    F = get_DoG(s, rS=1.1, rV=0.96, a=1.0)
 #    F = get_DoG(s, rS=3.5, a=1.0)
     
     #Transpose
-#    F = np.transpose(F, (1, 0, 2))
-#    F = np.transpose(F, (0, 2, 1))
+    # F = np.transpose(F, (1, 0, 2)) # Fy
+    F = np.transpose(F, (0, 2, 1)) # Fz
     dim = len(s)
     
 #==============================================================================
@@ -551,6 +551,7 @@ if __name__== '__main__':
         Fxyz = F 
         ny, nx, nz = Fxyz.shape
         plt.imshow(Fxyz[:,:,nz//2], cmap=cm.Greys_r,  interpolation='nearest')
+        # plt.imshow(Fxyz[:,nz//2,:], cmap=cm.Greys_r,  interpolation='nearest')
         plt.show()
         fig, axs = plot_3DFilter(Fxyz)
         fig.tight_layout(h_pad=1.0)  

@@ -54,12 +54,13 @@ def get_Circle(r1, r2, Imin=-1.0, Imax=+1.0):
     
     return rho
 
-def get_Ellipsoid(R, n=None,  A=[0,0,0], Imin=-1.0, Imax=+1.0):  
+def get_Ellipsoid(R, n=None,  A=[0,0,0], T=[0,0,0], Imin=-1.0, Imax=+1.0):  
     Rx, Ry, Rz = R
     a, b, c = A
-    az, ay, ax = a*np.pi/180.0, b*np.pi/180.0, c*np.pi/180.0
+    # az, ay, ax = a*np.pi/180.0, b*np.pi/180.0, c*np.pi/180.0
+    ax, ay, az = a*np.pi/180.0, b*np.pi/180.0, c*np.pi/180.0
     Rx, Ry, Rz = int(Rx), int(Ry), int(Rz)
-    
+    X, Y, Z = T
             
     Rmax = np.max([Rx, Ry, Rz])
     if (n<(2*Rmax+1)) or (not n):
@@ -80,16 +81,19 @@ def get_Ellipsoid(R, n=None,  A=[0,0,0], Imin=-1.0, Imax=+1.0):
     xx = (  x*(np.cos(ay)*np.cos(az)) +
             y*(-np.cos(ax)*np.sin(az) + np.sin(ax)*np.sin(ay)*np.cos(az)) +
             z*(np.sin(ax)*np.sin(az) +  np.cos(ax)*np.sin(ay)*np.cos(az))
+            +X
             )
     
     yy = (  x*(np.cos(ay)*np.sin(az)) +
             y*(np.cos(ax)*np.cos(az) + np.sin(ax)*np.sin(ay)*np.sin(az)) +
             z*(-np.sin(ax)*np.cos(az) +  np.cos(ax)*np.sin(ay)*np.sin(az))
+            +Y
             )
             
     zz = (  x*(-np.sin(ay)) +
             y*(np.sin(ax)*np.cos(ay)) +
             z*(np.cos(ax)*np.cos(ay))
+            +Z
             )
     mask = (xx**2/float(Rx**2) + yy**2/float(Ry**2) + zz**2/float(Rz**2)) <= 1.0
 
@@ -195,11 +199,17 @@ def get_Odd(num):
 if __name__== '__main__':
  
 
-    Rx, Ry, Rz, n = 17, 7, 5, 14
+    Rx, Ry, Rz = 30, 5, 5
+    k = 1.5
+    n = np.round(2*k*np.max([Rx, Ry, Rz])).astype(int)
     Imin=-1.0
     Imax=+1.0
-    imgIn = get_Ellipsoid(Rx, Ry, Rz, n, Imin=-1.0, Imax=+1.0)
+    imgIn = get_Ellipsoid(R=[Rx, Ry, Rz], n=n, A=[0,0,45], Imin=-1.0, Imax=+1.0)
     
+    #Noise Model
+    ny, nx, nz = imgIn.shape
+    Noise = 2*np.random.rand(ny, nx, nz) - 1
+    imgIn = imgIn + Noise
 
     
     ny, nx, nz = imgIn.shape
