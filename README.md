@@ -17,4 +17,4 @@ The MMSCD comes with a **user-friendly-GUI** that makes it easier both the selec
 Adrian Arias Abreu
 
 ## LICENCE
-[LICENCE](https://github.com/AdrianAriasAbreu/MassiveMultiScaleCellDetector_Arias/blob/master/LICENCE)
+[LICENCE](https://github.com/MorphoNeuralNetworks/MassiveMultiScaleCellDetector/blob/master/LICENCE)
