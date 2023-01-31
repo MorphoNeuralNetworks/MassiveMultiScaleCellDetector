@@ -8,6 +8,7 @@ Currently, the tools is in beta version (the code requires to be revised, update
 ### Performance of the Algorithm
 The MMSCD is able to classify **somatic cell detections** from **blob-like detections** (e.g., blood bessels, neurites or noise artifacts) 
 ![Algorithm Performance Detail](https://github.com/MorphoNeuralNetworks/MassiveMultiScaleCellDetector/blob/master/readme_images/AlgorithmPerformanceDetail.png)
+![Algorithm Performance Hippocampus Demo](https://github.com/MorphoNeuralNetworks/MassiveMultiScaleCellDetector/blob/master/readme_images/CellDetection_HippocampusDemo.png)
 
 ### Grafical User Interface (GUI)
 The MMSCD comes with a **user-friendly-GUI** that makes it easier both the selection of computing parameters and the visualization of the results, in an interactive way.
